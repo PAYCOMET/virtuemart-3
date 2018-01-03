@@ -1,0 +1,130 @@
+.remote_cc_form .vmpayment_label {
+    width: 30%;
+    display: inline-table;
+}
+
+.remote_cc_form  .vmpayment_cardinfo {
+    font-size: 100% !important;
+    line-height: 170%;
+}
+
+.remote_cc_form  .vmpayment_cardinfo_text {
+    font-weight: bold;
+    border-bottom: 1px solid #CCC;
+    margin-top: 15px;
+    margin-bottom: 10px;
+    color: #333;
+}
+
+.vmpayment_cc_cvv_realvault .vmpayment_label {
+    font-weight: bold;
+    margin-top: 15px;
+    margin-bottom: 10px;
+}
+
+.creditcardsDropDown input {
+    margin: 5px;
+}
+
+.remote_cc_form .inputbox {
+    width: 220px;
+    background-position: 0 -160px;
+    border: solid lightgray 1px;
+    border-radius: 4px;
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+    font-size: 12px;
+    cursor: pointer;
+    letter-spacing: 1px;
+    display: inline-block;
+    text-decoration: none;
+    padding: 3px 12px 1px;
+}
+
+.remote_cc_form .cc_cvv {
+    width: 100px;
+
+}
+
+.remote_cc_form .remote_save_card {
+    font-weight: bold;
+}
+
+.vmpayment_enter_cc {
+    color: #00a000;
+}
+
+.vmpayment_description {
+    display: block;
+    font-size: 100%;
+
+}
+
+.vmpayment_selected_cc {
+    color: gray;
+}
+
+div.card_payment_button {
+    
+    margin-top: 15px;
+}
+
+div.card_remove_button {
+    
+    margin-top: 15px;
+}
+
+
+
+.card_payment_button span.addtocart-button {
+    float: none;
+}
+
+.card_remove_button span.removecart-button {
+    float: none;
+    background-color: red!important;
+}
+
+.paytpv_vieworder {
+    margin-top: 10px;
+}
+
+.footer_paytpv {
+    padding: 30px 10px;
+    clear: both;
+}
+
+.footer_paytpv .footer_logo {
+    display: inline-block;
+    width: 130px;
+}
+
+
+.footer_paytpv ul {
+    float: left;
+    font-size: 14px;
+    border-right: none;
+    float: right;
+}
+
+.payment_icons {
+    display: inline-block;
+    float: right;
+    width: auto;
+}
+
+.payment_icons li {
+    display: inline-block;
+    margin: 0 5px 10px;
+}
+
+.payment_icons li img {
+    display: block;
+    height: 22px;
+}
+
+@media screen  and (max-width: 768px) {
+    #nav { display:none;}
+}
+
+

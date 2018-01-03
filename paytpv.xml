@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<extension version="2.5" type="plugin" group="vmpayment" method="upgrade">
+    <name>PAYTPV</name>
+    <creationDate>Diciembre 2017</creationDate>
+    <author>PAYTPV</author>
+    <authorUrl>https://paytpv.com</authorUrl>
+    <copyright>Copyright (C) 2017 PayTpv S.L. All rights reserved.</copyright>
+    <version>3.0.0</version>
+    <description>Módulo de pago para PAYTPV</description>
+    <languages folder="language">
+        <language tag="en-GB">en-GB/en-GB.plg_vmpayment_paytpv.ini</language>
+        <language tag="es-ES">es-ES/es-ES.plg_vmpayment_paytpv.ini</language>
+    </languages>
+    <files>
+        <filename plugin="paytpv">paytpv.php</filename>
+        <filename>paytpv_bankstore.php</filename>
+        <folder>paytpv</folder>
+        <folder>language</folder>
+    </files>
+
+    <vmconfig>
+        <fields name="params">
+            <fieldset name="basic" addfieldpath="/plugins/vmpayment/paytpv/paytpv/fields">
+                <field type="getpaytpv" />
+                
+                <field class="level1 redirect" type="vmtitle" default="VMPAYMENT_PAYTPV_CONFIGURATION"/>
+
+                <field class="required" name="clientcode" type="text" size="40" default="" label="VMPAYMENT_PAYTPV_CLIENTCODE" description=""/>
+                <field class="required" name="terminal" type="text" size="40" default="" label="VMPAYMENT_PAYTPV_TERMINAL"/>
+                <field class="required" name="password" type="text" size="40" default="" label="VMPAYMENT_PAYTPV_PASSWORD"/>
+                <field name="terminales" type="list"  default="0" label="VMPAYMENT_PAYTPV_TERMINALES">
+                    <option value="0">VMPAYMENT_PAYTPV_SECURE</option>
+                    <option value="1">VMPAYMENT_PAYTPV_NONSECURE</option>
+                    <option value="2">VMPAYMENT_PAYTPV_BOTH</option>
+                </field>
+
+                <field name="tdfirst" type="radio" class="terminales-param" default="0" label="VMPAYMENT_PAYTPV_3DFIRST" description="VMPAYMENT_PAYTPV_3DFIRST_DESC">
+                    <option value="0">COM_VIRTUEMART_NO</option>
+                    <option value="1">COM_VIRTUEMART_YES</option>
+                </field>
+                <field name="tdmin" class="terminales-param" type="text"  default="" label="VMPAYMENT_PAYTPV_3DMIN"/>
+
+
+                <field class="level1 redirect" type="vmtitle" default="VMPAYMENT_PAYTPV_OPTIONS"/>
+
+                <field name="disableoffersavecard" type="radio" default="0" label="VMPAYMENT_PAYTPV_DISABLESAVECARD">
+                    <option value="0">COM_VIRTUEMART_NO</option>
+                    <option value="1">COM_VIRTUEMART_YES</option>
+                </field>
+                <field name="remembercardunselected" type="radio"  default="0" label="VMPAYMENT_PAYTPV_REMEMBERCARD">
+                    <option value="0">COM_VIRTUEMART_NO</option>
+                    <option value="1">COM_VIRTUEMART_YES</option>
+                </field>
+
+                <field class="level1 redirect" type="vmtitle" default="SCORING"/>
+                <field name="merchantdata" type="radio" default="0" label="VMPAYMENT_PAYTPV_SENDMERCHANTDATA" description="VMPAYMENT_PAYTPV_SENDMERCHANTDATA_DESC" >
+                    <option value="0">COM_VIRTUEMART_NO</option>
+                    <option value="1">COM_VIRTUEMART_YES</option>
+                </field>
+
+
+                <field class="level1" type="vmtitle" default="VMPAYMENT_PAYTPV_ORDERSTATUS" description=""/>
+
+                <field name="status_pending" type="vmorderstate" scope="com_virtuemart" default="P" label="VMPAYMENT_PAYTPV_STATUS_PENDING" description="VMPAYMENT_PAYTPV_STATUS_PENDING_EXPLAIN" />
+                <field name="status_success" type="vmorderstate" scope="com_virtuemart" default="C" label="VMPAYMENT_PAYTPV_STATUS_SUCCESS" description="VMPAYMENT_PAYTPV_STATUS_SUCCESS_EXPLAIN" />
+                <field name="status_canceled" type="vmorderstate" scope="com_virtuemart" default="X" label="VMPAYMENT_PAYTPV_STATUS_FAILED" description="VMPAYMENT_PAYTPV_STATUS_FAILED_EXPLAIN" />
+                <field name="status_rebate" type="vmorderstate" scope="com_virtuemart" default="R" label="VMPAYMENT_PAYTPV_STATUS_REBATE" description="VMPAYMENT_PAYTPV_STATUS_REBATE_TIP"/>
+
+                <field class="level2" type="vmtitle" default="VMPAYMENT_PAYTPV_RESTRICTIONS"
+                       description=""/>
+            	<field name="countries" type="vmcountries"  scope="com_virtuemart" default="" label="VMPAYMENT_PAYTPV_COUNTRIES" description="VMPAYMENT_PAYTPV_COUNTRIES_DESC"/>
+                
+                <field name="min_amount" type="text"  label="VMPAYMENT_PAYTPV_MIN_AMOUNT" description="VMPAYMENT_PAYTPV_MIN_AMOUNT_EXPLAIN" />
+                <field name="max_amount" type="text"  label="VMPAYMENT_PAYTPV_MAX_AMOUNT" description="VMPAYMENT_PAYTPV_MAX_AMOUNT_EXPLAIN" />
+
+                <field class="level2" type="vmtitle" default="VMPAYMENT_PAYTPV_CURRENCIES"
+                       description=""/>
+
+                <field name="payment_currency" type="vmacceptedcurrency" default="" label="VMPAYMENT_PAYTPV_CURRENCY" description="VMPAYMENT_PAYTPV_CURRENCY_DESC" />
+
+                <field class="level2" type="vmtitle" default="VMPAYMENT_PAYTPV_FEES"
+                       description=""/>
+
+                <field name="cost_per_transaction" type="text"  label="VMPAYMENT_PAYTPV_COST_PER_TRANSACTION" description="VMPAYMENT_PAYTPV_COST_PER_TRANSACTION_EXPLAIN" />
+                <field name="cost_percent_total" type="text"  label="VMPAYMENT_PAYTPV_COST_PERCENT_TOTAL" description="VMPAYMENT_PAYTPV_COST_PERCENT_TOTAL_EXPLAIN" />
+                <field name="tax_id" type="vmtaxes" scope="com_virtuemart"  label="VMPAYMENT_PAYTPV_TAX" description="VMPAYMENT_PAYTPV_TAX_EXPLAIN" />
+
+                <field class="level1" type="vmtitle" default="VMPAYMENT_PAYTPV_TEMPLATE"
+                       description=""/>
+
+            	
+                <field name="payment_logos" type="vmfiles" multiple="true" label="VMPAYMENT_PAYTPV_LOGOS"
+                       description="VMPAYMENT_PAYTPV_LOGOS_DESC"
+                       directory="/images/virtuemart/payment"
+                       default="default" hide_default="1" hide_none="1"
+                       stripext="0" exclude="^_"/>
+
+
+                <field class="level1" type="vmtitle" default="VMPAYMENT_PAYTPV_DEBUG_SECTION" description=""/>
+                
+                <field name="debug" type="radio" default="0" label="VMPAYMENT_PAYTPV_DEBUG_SECTION">
+                    <option value="0">COM_VIRTUEMART_NO</option>
+                    <option value="1">COM_VIRTUEMART_YES</option>
+                </field>
+                <field name="log" type="radio" default="0" label="VMPAYMENT_PAYTPV_LOG"
+                       description="VMPAYMENT_PAYTPV_LOG_DESC">
+                    <option value="0">COM_VIRTUEMART_NO</option>
+                    <option value="1">COM_VIRTUEMART_YES</option>
+                </field>
+                
+
+
+            </fieldset>
+        </fields>
+    </vmconfig>
+    <updateservers>
+        <!-- Note: No spaces or linebreaks allowed between the server tags -->
+        <server type="extension" name="VirtueMart plg_vmpayment_paytpv Update Site"><![CDATA[http://virtuemart.net/releases/vm3/plg_vmpayment_paytpv_update.xml]]></server>
+    </updateservers>
+
+</extension>
