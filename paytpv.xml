@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<extension version="2.5" type="plugin" group="vmpayment" method="upgrade">
-    <name>PAYTPV</name>
+<extension version="3.0.1" type="plugin" group="vmpayment" method="upgrade">
+    <name>PAYCOMET</name>
     <creationDate>Diciembre 2017</creationDate>
-    <author>PAYTPV</author>
-    <authorUrl>https://paytpv.com</authorUrl>
+    <author>PAYCOMET</author>
+    <authorUrl>https://paycomet.com</authorUrl>
     <copyright>Copyright (C) 2017 PayTpv S.L. All rights reserved.</copyright>
     <version>3.0.0</version>
-    <description>Módulo de pago para PAYTPV</description>
+    <description>Módulo de pago para PAYCOMET</description>
     <languages folder="language">
         <language tag="en-GB">en-GB/en-GB.plg_vmpayment_paytpv.ini</language>
         <language tag="es-ES">es-ES/es-ES.plg_vmpayment_paytpv.ini</language>

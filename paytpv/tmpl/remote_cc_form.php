@@ -128,8 +128,8 @@ vmJsApi::addJScript ('vmPaytpvSumit',"
   <div class="paytpv_wrapper mobile">
     <div class="footer_line">
       <div class="footer_logo">
-        <a href="https://secure.paytpv.com/" target="_blank">
-          <img alt="PATYPV" src="<?php print $img_src?>paytpv_logo.svg">
+        <a href="https://www.paycomet.com/" target="_blank">
+          <img alt="PAYCOMET" src="<?php print $img_src?>logopaycomet.png">
         </a>
       </div>
       <ul class="payment_icons">

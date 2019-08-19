@@ -14,7 +14,7 @@
  * @author     PAYTPV
  * @license    BSD License (3-clause)
  * @copyright  (c) 2010-2016, PAYTPV
- * @link       https://www.paytpv.com
+ * @link       https://www..paycomet.com
  */
 
 class Paytpv_Bankstore
@@ -32,8 +32,8 @@ class Paytpv_Bankstore
 		$this->terminal = $arg2;
 		$this->password = $arg3;
 		$this->jetid = $arg4;
-		$this->endpoint = 'https://secure.paytpv.com/gateway/xml-bankstore?wsdl';
-		$this->endpointurl = 'https://secure.paytpv.com/gateway/ifr-bankstore?';
+		$this->endpoint = 'https://api.paycomet.com/gateway/xml-bankstore?wsdl';
+		$this->endpointurl = 'https://api.paycomet.com/gateway/ifr-bankstore?';
 	}
 
 	/**
