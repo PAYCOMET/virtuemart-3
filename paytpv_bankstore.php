@@ -55,7 +55,7 @@ class Paytpv_Bankstore
 		$pan = preg_replace('/\s+/', '', $pan);
 		$expdate = preg_replace('/\s+/', '', $expdate);
 		$cvv = preg_replace('/\s+/', '', $cvv);
-		$signature = sha1($this->merchantCode.$pan.$cvv.$this->terminal.$this->password);
+		$signature = hash('sha512',$this->merchantCode.$pan.$cvv.$this->terminal.$this->password);
 		$ip	= $_SERVER['REMOTE_ADDR'];
 
 		try{
@@ -78,7 +78,7 @@ class Paytpv_Bankstore
 	public function RemoveUser($idpayuser, $tokenpayuser)
 	{
 
-		$signature = sha1($this->merchantCode.$idpayuser.$tokenpayuser.$this->terminal.$this->password);
+		$signature = hash('sha512',$this->merchantCode.$idpayuser.$tokenpayuser.$this->terminal.$this->password);
 		$ip	= $_SERVER['REMOTE_ADDR'];
 
 		try {
@@ -100,7 +100,7 @@ class Paytpv_Bankstore
 	*/
 	public function InfoUser($idpayuser, $tokenpayuser)
 	{
-		$signature = sha1($this->merchantCode.$idpayuser.$tokenpayuser.$this->terminal.$this->password);
+		$signature = hash('sha512',$this->merchantCode.$idpayuser.$tokenpayuser.$this->terminal.$this->password);
 		$ip	= $_SERVER['REMOTE_ADDR'];
 
 		try{
@@ -131,7 +131,7 @@ class Paytpv_Bankstore
 
 	public function ExecutePurchase($idpayuser, $tokenpayuser, $amount, $transreference, $currency, $productdescription, $owner, $scoring = null, $merchant_data = null, $merchant_description = null)
 	{
-		$signature = sha1($this->merchantCode.$idpayuser.$tokenpayuser.$this->terminal.$amount.$transreference.$this->password);
+		$signature = hash('sha512',$this->merchantCode.$idpayuser.$tokenpayuser.$this->terminal.$amount.$transreference.$this->password);
 		$ip	= $_SERVER['REMOTE_ADDR'];
 
 		try{
@@ -158,7 +158,7 @@ class Paytpv_Bankstore
 
 	public function ExecutePurchaseDcc($idpayuser, $tokenpayuser, $amount, $transreference, $productdescription = false, $owner = false, $merchant_description = null)
 	{
-		$signature = sha1($this->merchantCode.$idpayuser.$tokenpayuser.$this->terminal.$amount.$transreference.$this->password);
+		$signature = hash('sha512',$this->merchantCode.$idpayuser.$tokenpayuser.$this->terminal.$amount.$transreference.$this->password);
 		$ip	= $_SERVER['REMOTE_ADDR'];
 
 		try{
@@ -182,7 +182,7 @@ class Paytpv_Bankstore
 
 	public function ConfirmPurchaseDcc($transreference, $dcccurrency, $dccsession)
 	{
-		$signature = sha1($this->merchantCode.$this->terminal.$transreference.$dcccurrency.$dccsession.$this->password);
+		$signature = hash('sha512',$this->merchantCode.$this->terminal.$transreference.$dcccurrency.$dccsession.$this->password);
 
 		try{
 			$clientSOAP = new SoapClient($this->endpoint);
@@ -208,7 +208,7 @@ class Paytpv_Bankstore
 
 	public function ExecuteRefund($idpayuser, $tokenpayuser, $transreference, $currency, $authcode, $amount = NULL, $merchant_description = NULL)
 	{
-		$signature = sha1($this->merchantCode.$idpayuser.$tokenpayuser.$this->terminal.$authcode.$transreference.$this->password);
+		$signature = hash('sha512',$this->merchantCode.$idpayuser.$tokenpayuser.$this->terminal.$authcode.$transreference.$this->password);
 		$ip	= $_SERVER['REMOTE_ADDR'];
 
 		try{
@@ -245,7 +245,7 @@ class Paytpv_Bankstore
 		$pan = preg_replace('/\s+/', '', $pan);
 		$expdate = preg_replace('/\s+/', '', $expdate);
 		$cvv = preg_replace('/\s+/', '', $cvv);
-		$signature = sha1($this->merchantCode.$pan.$cvv.$this->terminal.$amount.$currency.$this->password);
+		$signature = hash('sha512',$this->merchantCode.$pan.$cvv.$this->terminal.$amount.$currency.$this->password);
 		$ip	= $_SERVER['REMOTE_ADDR'];
 
 		try{
@@ -273,7 +273,7 @@ class Paytpv_Bankstore
 
 	public function EditSubscription($idpayuser, $tokenpayuser, $startdate, $enddate, $periodicity, $amount, $execute)
 	{
-		$signature = sha1($this->merchantCode.$idpayuser.$tokenpayuser.$this->terminal.$amount.$this->password);
+		$signature = hash('sha512',$this->merchantCode.$idpayuser.$tokenpayuser.$this->terminal.$amount.$this->password);
 		$ip	= $_SERVER['REMOTE_ADDR'];
 
 		try{
@@ -296,7 +296,7 @@ class Paytpv_Bankstore
 
 	public function RemoveSubscription($idpayuser, $tokenpayuser)
 	{
-		$signature = sha1($this->merchantCode.$idpayuser.$tokenpayuser.$this->terminal.$this->password);
+		$signature = hash('sha512',$this->merchantCode.$idpayuser.$tokenpayuser.$this->terminal.$this->password);
 		$ip	= $_SERVER['REMOTE_ADDR'];
 
 		try{
@@ -327,7 +327,7 @@ class Paytpv_Bankstore
 
 	public function CreateSubscriptionToken($idpayuser, $tokenpayuser, $startdate, $enddate, $transreference, $periodicity, $amount, $currency, $scoring = null, $merchant_data = null)
 	{
-		$signature = sha1($this->merchantCode.$idpayuser.$tokenpayuser.$this->terminal.$amount.$currency.$this->password);
+		$signature = hash('sha512',$this->merchantCode.$idpayuser.$tokenpayuser.$this->terminal.$amount.$currency.$this->password);
 		$ip	= $_SERVER['REMOTE_ADDR'];
 
 		try{
@@ -358,7 +358,7 @@ class Paytpv_Bankstore
 
 	public function CreatePreauthorization($idpayuser, $tokenpayuser, $amount, $transreference, $currency, $productdescription = false, $owner = false, $scoring = null, $merchant_data = null, $merchant_description = null)
 	{
-		$signature = sha1($this->merchantCode.$idpayuser.$tokenpayuser.$this->terminal.$amount.$transreference.$this->password);
+		$signature = hash('sha512',$this->merchantCode.$idpayuser.$tokenpayuser.$this->terminal.$amount.$transreference.$this->password);
 		$ip	= $_SERVER['REMOTE_ADDR'];
 
 		try{
@@ -383,7 +383,7 @@ class Paytpv_Bankstore
 
 	public function PreauthorizationConfirm($idpayuser, $tokenpayuser, $amount, $transreference, $merchant_description = null)
 	{
-		$signature = sha1($this->merchantCode.$idpayuser.$tokenpayuser.$this->terminal.$transreference.$amount.$this->password);
+		$signature = hash('sha512',$this->merchantCode.$idpayuser.$tokenpayuser.$this->terminal.$transreference.$amount.$this->password);
 		$ip	= $_SERVER['REMOTE_ADDR'];
 
 		try{
@@ -408,7 +408,7 @@ class Paytpv_Bankstore
 
 	public function PreauthorizationCancel($idpayuser, $tokenpayuser, $amount, $transreference)
 	{
-		$signature = sha1($this->merchantCode.$idpayuser.$tokenpayuser.$this->terminal.$transreference.$amount.$this->password);
+		$signature = hash('sha512',$this->merchantCode.$idpayuser.$tokenpayuser.$this->terminal.$transreference.$amount.$this->password);
 		$ip	= $_SERVER['REMOTE_ADDR'];
 
 		try{
@@ -433,7 +433,7 @@ class Paytpv_Bankstore
 
 	public function DeferredPreauthorizationConfirm($idpayuser, $tokenpayuser, $amount, $transreference)
 	{
-		$signature = sha1($this->merchantCode.$idpayuser.$tokenpayuser.$this->terminal.$transreference.$amount.$this->password);
+		$signature = hash('sha512',$this->merchantCode.$idpayuser.$tokenpayuser.$this->terminal.$transreference.$amount.$this->password);
 		$ip	= $_SERVER['REMOTE_ADDR'];
 
 		try{
@@ -458,7 +458,7 @@ class Paytpv_Bankstore
 
 	public function DeferredPreauthorizationCancel($idpayuser, $tokenpayuser, $amount, $transreference)
 	{
-		$signature = sha1($this->merchantCode.$idpayuser.$tokenpayuser.$this->terminal.$transreference.$amount.$this->password);
+		$signature = hash('sha512',$this->merchantCode.$idpayuser.$tokenpayuser.$this->terminal.$transreference.$amount.$this->password);
 		$ip	= $_SERVER['REMOTE_ADDR'];
 
 		try{
@@ -484,7 +484,7 @@ class Paytpv_Bankstore
 
 	public function ExecutePurchaseRToken($amount, $transreference, $rtoken, $currency, $productdescription = false, $merchant_description = null)
 	{
-		$signature = sha1($this->merchantCode.$this->terminal.$amount.$transreference.$rtoken.$this->password);
+		$signature = hash('sha512',$this->merchantCode.$this->terminal.$amount.$transreference.$rtoken.$this->password);
 
 		try{
 			$clientSOAP = new SoapClient($this->endpoint);
@@ -510,7 +510,7 @@ class Paytpv_Bankstore
 
 	public function AddUserToken($jettoken)
 	{
-		$signature = sha1($this->merchantCode.$jettoken.$this->jetid.$this->terminal.$this->password);
+		$signature = hash('sha512',$this->merchantCode.$jettoken.$this->jetid.$this->terminal.$this->password);
 		$ip	= $_SERVER['REMOTE_ADDR'];
 
 		try{
