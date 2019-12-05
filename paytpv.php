@@ -1,11 +1,11 @@
 <?php
 
 /**
- * @author PAYTPV
- * @version $Id: paytpv.php,v 2.0
+ * @author PAYCOMET
+ * @version $Id: PAYCOMET.php,v 2.0
  * @package VirtueMart
  * @subpackage payment
- * @copyright Copyright (C) 2017 PAYTPV - All rights reserved.
+ * @copyright Copyright (C) 2019 PAYCOMET - All rights reserved.
  * @license http://www.gnu.org/copyleft/gpl.html GNU/GPL, see LICENSE.php
  * VirtueMart is free software. This version may have been modified pursuant
  * to the GNU General Public License, and as distributed it includes or

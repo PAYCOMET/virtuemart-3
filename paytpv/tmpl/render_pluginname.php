@@ -3,9 +3,9 @@ defined('_JEXEC') or die();
 
 /**
  *
- * PAYTPV payment plugin
+ * PAYCOMET payment plugin
  *
- * @author PAYTPV
+ * @author PAYCOMET
  * @package VirtueMart
  * @subpackage payment
  */

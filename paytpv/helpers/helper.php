@@ -1,7 +1,7 @@
 <?php
 /**
  *
- * Paytpv payment plugin
+ * PAYCOMET payment plugin
  *
  * @author Valerie Isaksen
  * @version $Id: helper.php 9420 2017-01-12 09:35:36Z Milbo $
@@ -289,7 +289,7 @@ class  PaytpvHelperPaytpv {
             $merchantData = null;
         }
 
-        $response = $paytpv->ExecutePurchaseUrl($this->order['details']['BT']->order_number, $totalInPaymentCurrency, $currency_code_3, $consumerlanguage, "", null, $dsecure, $urlok, $urlko, $merchantData);
+        $response = $paytpv->ExecutePurchaseUrl($this->order['details']['BT']->order_number, $totalInPaymentCurrency, $currency_code_3, $consumerlanguage, "", $dsecure, null, $urlok, $urlko, $merchantData);
         $url = "";
         if ($response->DS_ERROR_ID==0){
             $url = $response->URL_REDIRECT;
