@@ -41,7 +41,6 @@ class plgVmpaymentPaytpv extends vmPSPlugin {
         $varsToPush = $this->getVarsToPush();
 
         $this->setConfigParameterable($this->_configTableFieldName, $varsToPush);
-        
     }
       
 
@@ -141,7 +140,7 @@ class plgVmpaymentPaytpv extends vmPSPlugin {
         // Save Card for future purchase
         $saveCard = 1;
 
-        if ($order['details']['BT']->virtuemart_user_id==0 || $this->_currentMethod->disableoffersavecard==1 || $this->_currentMethod->remembercardunselected==1) {
+        if ($order['details']['BT']->virtuemart_user_id==0 || $this->_currentMethod->disableoffersavecard==1) {
             $saveCard = 0;
         }
 
@@ -150,15 +149,13 @@ class plgVmpaymentPaytpv extends vmPSPlugin {
         $this->storePSPluginInternalData($dbValues);
 
         $remoteCCFormParams =$paytpvInterface->getRemoteCCFormParams();
-       
+
         $html = $this->renderByLayout('remote_cc_form', $remoteCCFormParams);
         vRequest::setVar('html', $html);
         vRequest::setVar('display_title', false);
 
         return true;
-
     }
-
 
     function renderPluginName ($method, $where = 'checkout') {
 
@@ -742,12 +739,10 @@ class plgVmpaymentPaytpv extends vmPSPlugin {
 
         $paytpvInterface->setPaymentCurrency();
         $paytpvInterface->setTotalInPaymentCurrency($myorder['details']['BT']->order_total);
-
         
         $totalInPaymentCurrency = vmPSPlugin::getAmountValueInCurrency($myorder['details']['BT']->order_total, $this->_currentMethod->payment_currency) * 100;
 
-        $dsecure = $paytpvInterface->isSecureTransaction($totalInPaymentCurrency,0)?1:0;
-
+        $dsecure = $paytpvInterface->isSecureTransaction($totalInPaymentCurrency, 0) ? 1 : 0;
 
         $user_id = $myorder['details']['BT']->virtuemart_user_id;
         $card_data = $paytpvInterface->getTokenData($user_id,$paytpv_card_hash);
@@ -764,19 +759,54 @@ class plgVmpaymentPaytpv extends vmPSPlugin {
 
         // Execute_Purchase
         }else{
-            
             if (!class_exists('Paytpv_Bankstore')) {
                 require(VMPATH_ROOT . DS.'plugins'. DS.'vmpayment'. DS.'paytpv'. DS.'paytpv_bankstore.php');
             }
-
-            $paytpv = new Paytpv_Bankstore($this->_currentMethod->clientcode,$this->_currentMethod->terminal, $this->_currentMethod->password, "");
             
+            if (!class_exists('PaycometApiRest')) {
+                require(VMPATH_ROOT . DS.'plugins'. DS.'vmpayment'. DS.'paytpv'. DS.'PaycometApiRest.php');
+            }
+
             $currency = $paytpvInterface->getPaymentCurrency();
-            $resp = $paytpv->ExecutePurchase($IdUser,$TokenUser,$totalInPaymentCurrency,$order_number,$currency,"","",null,null,null);
+
+            if($this->_currentMethod->apikey != ''){
+                $apiRest = new PaycometApiRest($this->_currentMethod->apikey);
+                $executePurchaseResponse = $apiRest->executePurchase(
+                    $this->_currentMethod->terminal,
+                    $order_number,
+                    $totalInPaymentCurrency,
+                    $currency,
+                    '1',
+                    $_SERVER['REMOTE_ADDR'],
+                    $dsecure,
+                    $IdUser,
+                    $TokenUser,
+                    JROUTE::_(JURI::root() . 'index.php?option=com_virtuemart&view=pluginresponse&task=pluginresponsereceived&tmpl=component&on=' . $order_number . '&pm=' . $myorder['details']['BT']->virtuemart_paymentmethod_id),
+                    JROUTE::_(JURI::root() . 'index.php?option=com_virtuemart&view=pluginresponse&task=pluginUserPaymentCancel&tmpl=component&on=' . $order_number . '&pm=' . $myorder['details']['BT']->virtuemart_paymentmethod_id),
+                    '',
+                    '',
+                    '',
+                    1,
+                    [],
+                    '',
+                    '',
+                    $paytpvInterface->getMerchantData($myorder)
+                );
+
+                $resp->DS_ERROR_ID = $executePurchaseResponse->errorCode;
+            } else {
+                $paytpv = new Paytpv_Bankstore($this->_currentMethod->clientcode,$this->_currentMethod->terminal, $this->_currentMethod->password, "");
+                $resp = $paytpv->ExecutePurchase($IdUser,$TokenUser,$totalInPaymentCurrency,$order_number,$currency,"","",null,null,null);
+            }
+
             $msg = '';
 
             if ('' == $resp->DS_ERROR_ID || 0 == $resp->DS_ERROR_ID) {
-                $url = JROUTE::_(JURI::root() . 'index.php?option=com_virtuemart&view=pluginresponse&task=pluginresponsereceived&tmpl=component&on=' . $order_number . '&pm=' . $myorder['details']['BT']->virtuemart_paymentmethod_id);
+                if($this->_currentMethod->apikey != ''){
+                    $url = $executePurchaseResponse->challengeUrl;
+                } else {
+                    $url = JROUTE::_(JURI::root() . 'index.php?option=com_virtuemart&view=pluginresponse&task=pluginresponsereceived&tmpl=component&on=' . $order_number . '&pm=' . $myorder['details']['BT']->virtuemart_paymentmethod_id);
+                }
                 
                 // Save IDUser y Token to Order
                 $payment_data = $this->getDataByOrderId($virtuemart_order_id);
@@ -929,7 +959,6 @@ class plgVmpaymentPaytpv extends vmPSPlugin {
                 $paytpvInterface->displayError($error);
                 $order_history_comment = vmText::_('VMPAYMENT_PAYTPV_API_UPDATE_STATUS_REBATE_ERROR');
             }
-            
         }
 
         $app = JFactory::getApplication();
@@ -961,8 +990,27 @@ class plgVmpaymentPaytpv extends vmPSPlugin {
        
         $currency = $paytpvInterface->getPaymentCurrency();
 
+        $method = $this->getVmPluginMethod($payment->virtuemart_paymentmethod_id);
 
-        $response = $paytpv->ExecuteRefund($payment_data->IdUser,$payment_data->TokenUser,$payment_data->order_number,$currency,$payment_data->AuthCode,$amount,"");
+        if($method->apikey != '') {
+            $apiRest = new PaycometApiRest($method->apikey);
+
+            $executeRefundResponse = $apiRest->executeRefund(
+                $payment_data->order_number,
+                $method->terminal,
+                $amount,
+                $currency,
+                $payment_data->AuthCode,
+                $_SERVER['REMOTE_ADDR'],
+                $payment_data->TokenUser,
+                $payment_data->IdUser
+            );
+
+            $response->DS_RESPONSE = $executeRefundResponse;
+            $response->DS_ERROR_ID = $executeRefundResponse->errorCode;
+        } else {
+            $response = $paytpv->ExecuteRefund($payment_data->IdUser,$payment_data->TokenUser,$payment_data->order_number,$currency,$payment_data->AuthCode,$amount,"");
+        }
 
         return $response;
         /*
