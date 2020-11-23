@@ -420,7 +420,6 @@ class plgVmpaymentPaytpv extends vmPSPlugin {
             require(VMPATH_SITE . DS . 'helpers' . DS . 'shopfunctionsf.php');
         }
         
-        
         $order_number = JRequest::getVar('on');
 
         if (!class_exists('VirtueMartModelOrders')) {
@@ -465,7 +464,6 @@ class plgVmpaymentPaytpv extends vmPSPlugin {
         return true;
     }
 
-
     // Payment KO
     public function plgVmOnUserPaymentCancel() {
         $virtuemart_paymentmethod_id = vRequest::getInt('pm', 0);
@@ -478,11 +476,9 @@ class plgVmpaymentPaytpv extends vmPSPlugin {
         }
         JFactory::getApplication()->enqueueMessage(vmText::_('VMPAYMENT_PAYTPV_ERROR_TRY_AGAIN'));
     }
-
     
     // Payment Notification
     function plgVmOnPaymentNotification(){
-
         $lang = JFactory::getLanguage();
         $filename = 'plg_vmpayment_paytpv';
         $lang->load($filename, JPATH_ADMINISTRATOR);
@@ -542,6 +538,7 @@ class plgVmpaymentPaytpv extends vmPSPlugin {
             echo "Error Firma";
             exit;
         }
+        
         $new_status = $method->status_pending;
         $comments = '';
 
@@ -588,7 +585,6 @@ class plgVmpaymentPaytpv extends vmPSPlugin {
             echo $comments;
             exit;
         }
-
         
         $response_fields = array();
         $response_fields['payment_name'] = $this->renderPluginName($method);
@@ -625,7 +621,6 @@ class plgVmpaymentPaytpv extends vmPSPlugin {
             $response_fields['TokenUser'] = $paytpv_data['TokenUser'];
         }
         
-        
         $this->storePSPluginInternalData($response_fields, 'virtuemart_order_id', true);
         $this->debugLog('process PAYTPV notificación OK, status', 'message');
 
@@ -640,23 +635,20 @@ class plgVmpaymentPaytpv extends vmPSPlugin {
             $order['customer_notified'] = 1;
             $order['comments'] = $comments;
             $modelOrder->updateStatusForOneOrder($virtuemart_order_id, $order, true);
-
+            
             // Si hay que almacenar la tarjeta
-            if ($payment_data->SaveCard==1){
+            if ($payment_data->SaveCard == 1){
                 if (isset($paytpv_data['IdUser']) && isset($paytpv_data['TokenUser'])){
                     $paytpvInterface = $this->_loadPaytpvInterface();
                     $IdUser = $paytpv_data["IdUser"];
                     $TokenUser = $paytpv_data["TokenUser"];
-                    $paytpvInterface->saveCard($virtuemart_order_id,$IdUser,$TokenUser);                  
+                    $paytpvInterface->saveCard($virtuemart_order_id, $IdUser, $TokenUser);                  
                 }
             }
             
             // remove vmcart
-            
             if (isset($payment_data->paytpv_api)) {
-                
                 $res = $this->emptyCart($payment_data->paytpv_api, $order_number);
-                
             }
         }
         echo $comments;
@@ -686,7 +678,6 @@ class plgVmpaymentPaytpv extends vmPSPlugin {
 
     // Payment Capture
     function PaymentCapture(){
-
         $lang = JFactory::getLanguage();
         $filename = 'plg_vmpayment_paytpv';
         $lang->load($filename, JPATH_ADMINISTRATOR);
@@ -910,7 +901,6 @@ class plgVmpaymentPaytpv extends vmPSPlugin {
 
     }
 
-
     function plgVmOnSelfCallBE ($type, $name, &$render) {
         if ($name != $this->_name || $type != 'vmpayment') {
             return FALSE;
@@ -921,7 +911,6 @@ class plgVmpaymentPaytpv extends vmPSPlugin {
         if (!($this->_currentMethod = $this->getVmPluginMethod($virtuemart_paymentmethod_id))) {
             return NULL; // Another method was selected, do nothing
         }
-
 
         $amount = vRequest::get('amount');
 
@@ -948,7 +937,7 @@ class plgVmpaymentPaytpv extends vmPSPlugin {
 
         $totalOrder = vmPSPlugin::getAmountValueInCurrency($orderData['details']['BT']->order_total, $this->_currentMethod->payment_currency) * 100;
         $amount_ref = vmPSPlugin::getAmountValueInCurrency($amount, $this->_currentMethod->payment_currency);
-        
+
         if ( $action=='rebatePayment') {
             $requestSent = true;
             $response = $this->doRebate($paytpvInterface, $orderData, $payment_data, $amount);
@@ -956,6 +945,10 @@ class plgVmpaymentPaytpv extends vmPSPlugin {
             $msg = '';
             if ('' == $response->DS_RESPONSE || 0 == $response->DS_RESPONSE) {
                 $error = "Error: " . $response->DS_ERROR_ID;
+                $paytpvInterface->displayError($error);
+                $order_history_comment = vmText::_('VMPAYMENT_PAYTPV_API_UPDATE_STATUS_REBATE_ERROR');
+            } else if ($response->DS_RESPONSE->errorCode != 0) {
+                $error = "Error: " . $response->DS_RESPONSE->errorCode;
                 $paytpvInterface->displayError($error);
                 $order_history_comment = vmText::_('VMPAYMENT_PAYTPV_API_UPDATE_STATUS_REBATE_ERROR');
             }
@@ -982,6 +975,10 @@ class plgVmpaymentPaytpv extends vmPSPlugin {
             require(VMPATH_ROOT . DS.'plugins'. DS.'vmpayment'. DS.'paytpv'. DS.'paytpv_bankstore.php');
         }
 
+        if (!class_exists('PaycometApiRest')) {
+            require(VMPATH_ROOT . DS.'plugins'. DS.'vmpayment'. DS.'paytpv'. DS.'PaycometApiRest.php');
+        }
+
         if ($amount){
             $amount = vmPSPlugin::getAmountValueInCurrency($amount, $this->_currentMethod->payment_currency) * 100;
         }
@@ -990,14 +987,12 @@ class plgVmpaymentPaytpv extends vmPSPlugin {
        
         $currency = $paytpvInterface->getPaymentCurrency();
 
-        $method = $this->getVmPluginMethod($payment->virtuemart_paymentmethod_id);
-
-        if($method->apikey != '') {
-            $apiRest = new PaycometApiRest($method->apikey);
+        if($this->_currentMethod->apikey != '') {
+            $apiRest = new PaycometApiRest($this->_currentMethod->apikey);
 
             $executeRefundResponse = $apiRest->executeRefund(
                 $payment_data->order_number,
-                $method->terminal,
+                $this->_currentMethod->terminal,
                 $amount,
                 $currency,
                 $payment_data->AuthCode,

@@ -59,8 +59,8 @@ class PaycometApiRest
     ) {
         $params = [
             'idUser' => (int) $idUser,
+            'terminal' => (int) $terminal,
             'tokenUser' => (string) $tokenUser,
-            'terminal' => (string) $terminal,
         ];
             
         return $this->executeRequest('https://rest.paycomet.com/v1/cards/info', $params);

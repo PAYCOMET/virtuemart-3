@@ -219,8 +219,8 @@ class  PaytpvHelperPaytpv {
             require(VMPATH_ROOT . DS.'plugins'. DS.'vmpayment'. DS.'paytpv'. DS.'paytpv_bankstore.php');
 		}
 		
-        $paytpv = new Paytpv_Bankstore($this->_method->clientcode,$this->_method->terminal, $this->_method->password, "");
-
+		$paytpv = new Paytpv_Bankstore($this->_method->clientcode,$this->_method->terminal, $this->_method->password, "");
+		
         $response = $paytpv->ExecutePurchaseTokenUrl($this->order['details']['BT']->order_number, $totalInPaymentCurrency, $currency_code_3, $IdUser,$TokenUser, $consumerlanguage, "", $dsecure, null, $urlok, $urlko, $merchantData);
         if ($response->DS_ERROR_ID==0){
             $url = $response->URL_REDIRECT;
@@ -287,11 +287,11 @@ class  PaytpvHelperPaytpv {
         }else{
             $merchantData = null;
 		}
-		
 		$url = "";
 		
 		if ($this->_method->apikey != '') {
 			$apiRest = new PaycometApiRest($this->_method->apikey);
+			$merchantData = $this->getMerchantData($this->order);
 
 			$formResponse = $apiRest->form(
 				$ds_merchant_transactiontype,
@@ -302,7 +302,10 @@ class  PaytpvHelperPaytpv {
 					'terminal' => $this->_method->terminal,
 					'order' => $ds_merchant_order,
 					'amount' => $totalInPaymentCurrency,
-					'currency' => $currency_code_3
+					'currency' => $currency_code_3,
+					'urlOk' => $urlok,
+					'urlKo' => $urlko,
+					'merchantData' => $merchantData
 				]
 			);
 
@@ -316,8 +319,8 @@ class  PaytpvHelperPaytpv {
 			}
 		}
 
-        $paytpv_cards = $this->getPaytpvCardsDropDown();
-
+		$paytpv_cards = $this->getPaytpvCardsDropDown();
+		
         return array(
         	"url"						  => $url,
 			"order_amount"                => $order_amount_txt,
@@ -340,54 +343,53 @@ class  PaytpvHelperPaytpv {
         $Merchant_Data["customer"]["id"] = $order['details']['BT']->virtuemart_user_id;
         $Merchant_Data["customer"]["name"] = $order['details']['BT']->first_name;
         $Merchant_Data["customer"]["surname"] = $order['details']['BT']->last_name;
-        $Merchant_Data["customer"]["email"] =  $order['details']['BT']->email;
+		$Merchant_Data["customer"]["email"] =  $order['details']['BT']->email;
 
-        $phone = "";
+		$Merchant_Data["customer"]["homePhone"]["subscriber"] = $order['details']['BT']->phone_1 ?? '';
+		$Merchant_Data["customer"]["mobilePhone"]["subscriber"] = $order['details']['BT']->phone_2 ?? '';
+		$Merchant_Data['customer']['firstBuy'] = ($this->isFirstPurchaseCustomer($order['details']['BT']->virtuemart_user_id)) ? 'si' : 'no';
 
-        $Merchant_Data["customer"]["homePhone"]["subscriber"] = $order['details']['BT']->phone_1;
-        $Merchant_Data["customer"]["mobilePhone"]["subscriber"] = $order['details']['BT']->phone_2;
-        $Merchant_Data["customer"]["firstBuy"] = ($this->isFirstPurchaseCustomer($order['details']['BT']->virtuemart_user_id))?1:0;
-        
         // Shipping
         // Address
         if ($order['details']['BT']){
-            $street0 = $order['details']['BT']->address_1;
-            $street1 = $order['details']['BT']->address_2;
+			$street0 = $order['details']['BT']->address_1 ?? '';
+            $street1 = $order['details']['BT']->address_2 ?? '';
             $state_name = ShopFunctions::getStateByID($order['details']['BT']->virtuemart_state_id);
-            $country_name = ShopFunctions::getCountryByID($order['details']['BT']->virtuemart_country_id, 'country_2_code');
-        }
+            // $country_name = ShopFunctions::getCountryByID($order['details']['BT']->virtuemart_country_id, 'country_2_code');
+		}
 
-        $Merchant_Data["shipping"]["shipAddrLine1"] = ($order['details']['BT']) ? $street0 : "";
+		$Merchant_Data["shipping"]["shipAddrLine1"] = ($order['details']['BT']) ? $street0 : "";
         $Merchant_Data["shipping"]["shipAddrCity"] = ($order['details']['BT']) ? $order['details']['BT']->city : "";
-        $Merchant_Data["shipping"]["shipAddrCountry"] = ($order['details']['BT']) ? $country_name : "";
+        $Merchant_Data["shipping"]["shipAddrCountry"] = $order['details']['BT']->virtuemart_country_id ?? "724";
         $Merchant_Data["shipping"]["shipAddrLine2"] = ($order['details']['BT']) ? $street1 : "";
         $Merchant_Data["shipping"]["shipAddrPostCode"] = ($order['details']['BT']) ? $order['details']['BT']->zip : "";
         $Merchant_Data["shipping"]["shipAddrState"] = ($order['details']['BT']) ? $state_name : "";
-
+		
         // Time
         $Merchant_Data["shipping"]["time"] = "";
-
+		
         // Billing
         if ($order['details']['ST']){
-        	$street0 = $order['details']['ST']->address_1;
-            $street1 = $order['details']['ST']->address_2;
+			$street0 = $order['details']['ST']->address_1 ?? '';
+            $street1 = $order['details']['ST']->address_2 ?? '';
             $state_name = ShopFunctions::getStateByID($order['details']['ST']->virtuemart_state_id);
-            $country_name = ShopFunctions::getCountryByID($order['details']['ST']->virtuemart_country_id, 'country_2_code');
-        }
-
+            // $country_name = ShopFunctions::getCountryByID($order['details']['ST']->virtuemart_country_id, 'country_2_code');
+		}
+		
         $Merchant_Data["billing"]["billAddrCity"] = ($order['details']['ST']) ? $order['details']['ST']->city : "";
-        $Merchant_Data["billing"]["billAddrCountry"] = ($order['details']['ST']) ? $country_name : "";
+        $Merchant_Data["billing"]["billAddrCountry"] = $order['details']['ST']->virtuemart_country_id ?? '724';
         $Merchant_Data["billing"]["billAddrLine1"] = ($order['details']['ST']) ? $street0 : "";
         $Merchant_Data["billing"]["billAddrLine2"] = ($order['details']['ST']) ? $street1 : "";
         $Merchant_Data["billing"]["billAddrPostCode"] = ($order['details']['ST']) ? $order['details']['ST']->zip : "";
 		$Merchant_Data["billing"]["billAddrState"] = ($order['details']['ST']) ? $state_name : "";
-
+		
+		
 		//AccountInfo
 		$userInfo = JFactory::getUser();
 		$registerDate = new DateTime(strftime('%Y%m%d', strtotime($userInfo->registerDate)));
 		$now = new DateTime("now");
 		$diffBetweenDates = $now->diff($registerDate)->days;
-
+		
 		if($userInfo->id == 0) {
 			$Merchant_Data["acctInfo"]["chAccAgeInd"] = "01";
 		} else {
@@ -401,18 +403,18 @@ class  PaytpvHelperPaytpv {
 				$Merchant_Data["acctInfo"]["chAccAgeInd"] = "05";
 			}
 		}
-
+		
 		$userInfoTable = "#__virtuemart_userinfos";
 		$userLastModificationQuery = 'SELECT modified_on FROM ' . $userInfoTable . ' WHERE  `virtuemart_user_id` = ' . $userInfo->id;
-
+		
 		$db = JFactory::getDBO();
 		$db->setQuery($userLastModificationQuery);
 		$result = $db->loadResult();
 		$userLastModificationDate = new DateTime(strftime('%Y%m%d', strtotime($result)));
-
-		$Merchant_Data["acctInfo"]["chAccChange"] = $userLastModificationDate->format('Y-m-d');
+		
+		$Merchant_Data["acctInfo"]["chAccChange"] = $userLastModificationDate->format('Ymd');
 		$diffBetweenDates = $now->diff($userLastModificationDate)->days;
-
+		
 		if ($diffBetweenDates == 0) {
 			$Merchant_Data["acctInfo"]["chAccChangeInd"] = "01";
 		} else if ($diffBetweenDates < 30) {
@@ -422,32 +424,32 @@ class  PaytpvHelperPaytpv {
 		} else {
 			$Merchant_Data["acctInfo"]["chAccChangeInd"] = "04";
 		}
-
-		$Merchant_Data["acctInfo"]["chAccDate"] = $registerDate->format('Y-m-d');
-
+		
+		$Merchant_Data["acctInfo"]["chAccDate"] = $registerDate->format('Ymd');
+		
 		$ordersTable = "#__virtuemart_orders";
-
+		
 		$userTotalOrders = "SELECT count(*) FROM " . $ordersTable . ' WHERE `virtuemart_user_id` = ' . $userInfo->id . ' AND `created_on` > DATE_SUB(NOW(), INTERVAL 6 MONTH) AND `order_status` = "' . $this->_method->status_success . '"';
 		$db->setQuery($userTotalOrders);
 		$result = $db->loadResult();
 		$Merchant_Data["acctInfo"]["nbPurchaseAccount"] = $result;
-
+		
 		$userOrdersLastDay = "SELECT count(*) FROM " . $ordersTable . ' WHERE `virtuemart_user_id` = ' . $userInfo->id . ' AND `created_on` > DATE_SUB(NOW(), INTERVAL 1 DAY)';
 		$db->setQuery($userOrdersLastDay);
 		$result = $db->loadResult();
 		$Merchant_Data["acctInfo"]["txnActivityDay"] = $result;
-
+		
 		$userOrdersLastDay = "SELECT count(*) FROM " . $ordersTable . ' WHERE `virtuemart_user_id` = ' . $userInfo->id . ' AND `created_on` > DATE_SUB(NOW(), INTERVAL 1 YEAR)';
 		$db->setQuery($userOrdersLastDay);
 		$result = $db->loadResult();
 		$Merchant_Data["acctInfo"]["txnActivityYear"] = $result;
-
+		
 		$Merchant_Data["acctInfo"]["shipNameIndicator"] = $userInfo->name == $order['details']['BT']->first_name ? '01' : '02';
 		$Merchant_Data["acctInfo"]["suspiciousAccActivity"] = '01';
 		
 		$Merchant_Data["threeDSRequestorAuthenticationInfo"]["threeDSReqAuthData"] = '';
 		$Merchant_Data["threeDSRequestorAuthenticationInfo"]["threeDSReqAuthMethod"] = ($userInfo->id != 0) ? "02" : "01";
-
+		
 		//Shopping Cart
 		$Merchant_Data["shoppingCart"] = [];
 		
@@ -460,14 +462,14 @@ class  PaytpvHelperPaytpv {
 		}
 		
 		$Merchant_Data["addrMatch"] = $order['details']['ST']->address_1 == $order['details']['BT']->address_1 ? 'Y' : 'N';
-
+		
 		// Con la nueva API Rest se pasa en un array
 		// $Merchant_Data = urlencode(base64_encode(json_encode($Merchant_Data)));
 		
-        return json_encode($Merchant_Data);
+        return $Merchant_Data;
 	}
 
-	public function saveCard($virtuemart_order_id,$IdUser,$TokenUser){
+	public function saveCard($virtuemart_order_id, $IdUser, $TokenUser){
 
 		if (!class_exists('Paytpv_Bankstore')) {
 		    require(VMPATH_ROOT . DS.'plugins'. DS.'vmpayment'. DS.'paytpv'. DS.'paytpv_bankstore.php');
@@ -476,7 +478,7 @@ class  PaytpvHelperPaytpv {
 		if (!class_exists('PaycometApiRest')) {
             require(VMPATH_ROOT . DS.'plugins'. DS.'vmpayment'. DS.'paytpv'. DS.'PaycometApiRest.php');
 		}
-		
+
 		if ($this->_method->apikey != '') {
 			$apiRest = new PaycometApiRest($this->_method->apikey);
 
@@ -490,10 +492,10 @@ class  PaytpvHelperPaytpv {
 			$resp->DS_MERCHANT_PAN = $infoUserResponse->pan;
 			$resp->DS_CARD_BRAND = $infoUserResponse->cardBrand;
 			$resp->DS_EXPIRYDATE = $infoUserResponse->expiryDate;
-			$resp->DS_CARD_HASH = $infoUserResponse->hash;
+			$resp->DS_CARD_HASH = $infoUserResponse->cardHash;
 		} else {
 			$paytpv = new Paytpv_Bankstore($this->_method->clientcode,$this->_method->terminal, $this->_method->password, "");
-	
+
 			$resp = $paytpv->InfoUser($IdUser,$TokenUser);
 		}
 
@@ -576,6 +578,7 @@ class  PaytpvHelperPaytpv {
 		if (!class_exists('VmHTML')) {
 			require(VMPATH_ADMIN . DS . 'helpers' . DS . 'html.php');
 		}
+
 		$selected_cc = 0;
 		$attrs = 'class="inputbox vm-chzn-select"';
 		$idA = $id = 'paytpv_card';
