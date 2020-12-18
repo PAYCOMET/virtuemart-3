@@ -279,7 +279,7 @@ class  PaytpvHelperPaytpv {
             require(VMPATH_ROOT . DS.'plugins'. DS.'vmpayment'. DS.'paytpv'. DS.'PaycometApiRest.php');
         }
 
-        $dsecure = $this->isSecureTransaction($totalInPaymentCurrency,0) ? 1 : 0;
+        $dsecure = $this->isSecureTransaction($totalInPaymentCurrency, 0) ? 1 : 0;
 		$consumerlanguage = $this->getLang();
 		
         if ($this->_method->merchantdata){
@@ -303,6 +303,7 @@ class  PaytpvHelperPaytpv {
 					'order' => $ds_merchant_order,
 					'amount' => $totalInPaymentCurrency,
 					'currency' => $currency_code_3,
+					'secure' => $dsecure,
 					'urlOk' => $urlok,
 					'urlKo' => $urlko,
 					'merchantData' => $merchantData

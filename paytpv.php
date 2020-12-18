@@ -996,9 +996,7 @@ class plgVmpaymentPaytpv extends vmPSPlugin {
                 $amount,
                 $currency,
                 $payment_data->AuthCode,
-                $_SERVER['REMOTE_ADDR'],
-                $payment_data->TokenUser,
-                $payment_data->IdUser
+                $_SERVER['REMOTE_ADDR']
             );
 
             $response->DS_RESPONSE = $executeRefundResponse;
