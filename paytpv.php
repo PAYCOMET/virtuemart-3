@@ -772,8 +772,8 @@ class plgVmpaymentPaytpv extends vmPSPlugin {
                     $dsecure,
                     $IdUser,
                     $TokenUser,
-                    JROUTE::_(JURI::root() . 'index.php?option=com_virtuemart&view=pluginresponse&task=pluginresponsereceived&tmpl=component&on=' . $order_number . '&pm=' . $myorder['details']['BT']->virtuemart_paymentmethod_id),
-                    JROUTE::_(JURI::root() . 'index.php?option=com_virtuemart&view=pluginresponse&task=pluginUserPaymentCancel&tmpl=component&on=' . $order_number . '&pm=' . $myorder['details']['BT']->virtuemart_paymentmethod_id),
+                    JROUTE::_(JURI::root() . 'index.php?option=com_virtuemart&view=pluginresponse&task=pluginresponsereceived&on=' . $order_number . '&pm=' . $myorder['details']['BT']->virtuemart_paymentmethod_id),
+                    JROUTE::_(JURI::root() . 'index.php?option=com_virtuemart&view=pluginresponse&task=pluginUserPaymentCancel&on=' . $order_number . '&pm=' . $myorder['details']['BT']->virtuemart_paymentmethod_id),
                     '',
                     '',
                     '',
@@ -796,7 +796,7 @@ class plgVmpaymentPaytpv extends vmPSPlugin {
                 if($this->_currentMethod->apikey != ''){
                     $url = $executePurchaseResponse->challengeUrl;
                 } else {
-                    $url = JROUTE::_(JURI::root() . 'index.php?option=com_virtuemart&view=pluginresponse&task=pluginresponsereceived&tmpl=component&on=' . $order_number . '&pm=' . $myorder['details']['BT']->virtuemart_paymentmethod_id);
+                    $url = JROUTE::_(JURI::root() . 'index.php?option=com_virtuemart&view=pluginresponse&task=pluginresponsereceived&on=' . $order_number . '&pm=' . $myorder['details']['BT']->virtuemart_paymentmethod_id);
                 }
                 
                 // Save IDUser y Token to Order
@@ -811,7 +811,7 @@ class plgVmpaymentPaytpv extends vmPSPlugin {
                 $this->storePSPluginInternalData($response_fields, 'virtuemart_order_id', true);
 
             }else{
-                $url = JROUTE::_(JURI::root() . 'index.php?option=com_virtuemart&view=pluginresponse&task=pluginUserPaymentCancel&tmpl=component&on=' . $order_number . '&pm=' . $myorder['details']['BT']->virtuemart_paymentmethod_id);
+                $url = JROUTE::_(JURI::root() . 'index.php?option=com_virtuemart&view=pluginresponse&task=pluginUserPaymentCancel&on=' . $order_number . '&pm=' . $myorder['details']['BT']->virtuemart_paymentmethod_id);
                 $msg = vmText::_('VMPAYMENT_PAYTPV_ERROR_TRY_AGAIN');
                 $paytpvInterface->debugLog('order number: ' . $order_number . ", Error: " . $resp->DS_ERROR_ID, 'PaymentCapture', 'debug');
             }

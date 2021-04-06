@@ -197,8 +197,8 @@ class  PaytpvHelperPaytpv {
 
         $totalInPaymentCurrency = vmPSPlugin::getAmountValueInCurrency($this->order['details']['BT']->order_total, $this->_method->payment_currency) * 100;
 
-        $urlok = JROUTE::_(JURI::root() . 'index.php?option=com_virtuemart&view=pluginresponse&task=pluginresponsereceived&tmpl=component&on=' . $this->order['details']['BT']->order_number . '&pm=' . $this->order['details']['BT']->virtuemart_paymentmethod_id);
-        $urlko = JROUTE::_(JURI::root() . 'index.php?option=com_virtuemart&view=pluginresponse&task=pluginUserPaymentCancel&tmpl=component&on=' . $this->order['details']['BT']->order_number . '&pm=' . $this->order['details']['BT']->virtuemart_paymentmethod_id);
+        $urlok = JROUTE::_(JURI::root() . 'index.php?option=com_virtuemart&view=pluginresponse&task=pluginresponsereceived&on=' . $this->order['details']['BT']->order_number . '&pm=' . $this->order['details']['BT']->virtuemart_paymentmethod_id);
+        $urlko = JROUTE::_(JURI::root() . 'index.php?option=com_virtuemart&view=pluginresponse&task=pluginUserPaymentCancel&on=' . $this->order['details']['BT']->order_number . '&pm=' . $this->order['details']['BT']->virtuemart_paymentmethod_id);
 
         $ds_merchant_order = $this->order['details']['BT']->order_number;
         $ds_merchant_transactiontype = 109;
@@ -263,8 +263,8 @@ class  PaytpvHelperPaytpv {
 
         $totalInPaymentCurrency = vmPSPlugin::getAmountValueInCurrency($this->order['details']['BT']->order_total, $this->_method->payment_currency) * 100;
 
-        $urlok = JROUTE::_(JURI::root() . 'index.php?option=com_virtuemart&view=pluginresponse&task=pluginresponsereceived&tmpl=component&on=' . $this->order['details']['BT']->order_number . '&pm=' . $this->order['details']['BT']->virtuemart_paymentmethod_id);
-        $urlko = JROUTE::_(JURI::root() . 'index.php?option=com_virtuemart&view=pluginresponse&task=pluginUserPaymentCancel&tmpl=component&on=' . $this->order['details']['BT']->order_number . '&pm=' . $this->order['details']['BT']->virtuemart_paymentmethod_id);
+        $urlok = JROUTE::_(JURI::root() . 'index.php?option=com_virtuemart&view=pluginresponse&task=pluginresponsereceived&on=' . $this->order['details']['BT']->order_number . '&pm=' . $this->order['details']['BT']->virtuemart_paymentmethod_id);
+        $urlko = JROUTE::_(JURI::root() . 'index.php?option=com_virtuemart&view=pluginresponse&task=pluginUserPaymentCancel&on=' . $this->order['details']['BT']->order_number . '&pm=' . $this->order['details']['BT']->virtuemart_paymentmethod_id);
 
         $ds_merchant_order = $this->order['details']['BT']->order_number;
         $ds_merchant_transactiontype = 1;
