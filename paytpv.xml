@@ -4,8 +4,8 @@
     <creationDate>Diciembre 2017</creationDate>
     <author>PAYCOMET</author>
     <authorUrl>https://www.paycomet.com</authorUrl>
-    <copyright>Copyright (C) 2019 PAYTPV ON LINE ENTIDAD DE PAGO S.L All rights reserved.</copyright>
-    <version>3.0.2</version>
+    <copyright>Copyright (C) 2021 PAYCOMET S.L.U. All rights reserved.</copyright>
+    <version>3.0.3</version>
     <description>Módulo de pago para PAYCOMET</description>
     <languages folder="language">
         <language tag="en-GB">en-GB/en-GB.plg_vmpayment_paytpv.ini</language>
