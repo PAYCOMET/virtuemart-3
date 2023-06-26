@@ -4,8 +4,8 @@
     <creationDate>Diciembre 2017</creationDate>
     <author>PAYCOMET</author>
     <authorUrl>https://www.paycomet.com</authorUrl>
-    <copyright>Copyright (C) 2021 PAYCOMET S.L.U. All rights reserved.</copyright>
-    <version>3.0.3</version>
+    <copyright>Copyright (C) PAYCOMET S.L.U. All rights reserved.</copyright>
+    <version>3.1.0</version>
     <description>Módulo de pago para PAYCOMET</description>
     <languages folder="language">
         <language tag="en-GB">en-GB/en-GB.plg_vmpayment_paytpv.ini</language>
@@ -14,6 +14,7 @@
     <files>
         <filename plugin="paytpv">paytpv.php</filename>
         <filename>paytpv_bankstore.php</filename>
+        <filename>PaycometApiRest.php</filename>
         <folder>paytpv</folder>
         <folder>language</folder>
     </files>
@@ -26,6 +27,7 @@
                 <field class="level1 redirect" type="vmtitle" default="VMPAYMENT_PAYTPV_CONFIGURATION"/>
 
                 <field class="required" name="clientcode" type="text" size="40" default="" label="VMPAYMENT_PAYTPV_CLIENTCODE" description=""/>
+                <field class="required" name="apikey" type="text" size="40" default="" label="VMPAYMENT_PAYTPV_APIKEY" description=""/>
                 <field class="required" name="terminal" type="text" size="40" default="" label="VMPAYMENT_PAYTPV_TERMINAL"/>
                 <field class="required" name="password" type="text" size="40" default="" label="VMPAYMENT_PAYTPV_PASSWORD"/>
                 <field name="terminales" type="list"  default="0" label="VMPAYMENT_PAYTPV_TERMINALES">
@@ -44,10 +46,6 @@
                 <field class="level1 redirect" type="vmtitle" default="VMPAYMENT_PAYTPV_OPTIONS"/>
 
                 <field name="disableoffersavecard" type="radio" default="0" label="VMPAYMENT_PAYTPV_DISABLESAVECARD">
-                    <option value="0">COM_VIRTUEMART_NO</option>
-                    <option value="1">COM_VIRTUEMART_YES</option>
-                </field>
-                <field name="remembercardunselected" type="radio"  default="0" label="VMPAYMENT_PAYTPV_REMEMBERCARD">
                     <option value="0">COM_VIRTUEMART_NO</option>
                     <option value="1">COM_VIRTUEMART_YES</option>
                 </field>

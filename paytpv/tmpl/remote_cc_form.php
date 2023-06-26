@@ -88,19 +88,13 @@ vmJsApi::addJScript ('vmPaytpvSumit',"
 
 
 	<?php if ($viewData['offer_save_card'] && $viewData['user_id']>0){
-
-		if($viewData['remembercardunselected']) {
-			$checked = 'checked="checked"';
-		} else {
-			$checked = '';
-		}
-		?>
+	?>
 
 		<div class="offer_save_card">
-			<div id="save_card_tip"><?php echo vmText::_('VMPAYMENT_PAYTPV_SAVE_CARD_DETAILS_TIP') ?></div>
 			<label for="save_card">
 				<input id="save_card" name="save_card" type="checkbox" value="1" <?php echo $checked ?>><span
 					class="save_card"> <?php echo vmText::_('VMPAYMENT_PAYTPV_SAVE_CARD_DETAILS') ?></span> </label>
+			<div id="save_card_tip"><?php echo vmText::_('VMPAYMENT_PAYTPV_SAVE_CARD_DETAILS_TIP') ?></div>
 		</div>
 	<?php
 	}
