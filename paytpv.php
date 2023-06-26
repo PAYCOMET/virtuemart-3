@@ -148,6 +148,7 @@ class plgVmpaymentPaytpv extends vmPSPlugin {
 
         $this->storePSPluginInternalData($dbValues);
 
+
         $remoteCCFormParams =$paytpvInterface->getRemoteCCFormParams();
 
         $html = $this->renderByLayout('remote_cc_form', $remoteCCFormParams);
@@ -226,7 +227,7 @@ class plgVmpaymentPaytpv extends vmPSPlugin {
         } else {
             $cost_percent_total = $method->cost_percent_total;
         }
-        return ($method->cost_per_transaction + ($cart_prices['salesPrice'] * $cost_percent_total * 0.01));
+        return  ((int)$method->cost_per_transaction + ($cart_prices['salesPrice'] * (int)$cost_percent_total * 0.01));
     }
 
     /**
@@ -321,7 +322,11 @@ class plgVmpaymentPaytpv extends vmPSPlugin {
      */
     private function createPaytpvTokenTable ($tablesFields = 0) {
         $payerRefTableName = $this->getPaytpvTokenTableName();
-        $query = "CREATE TABLE IF NOT EXISTS `" . $payerRefTableName . "` (";
+        $db = JFactory::getDBO();
+
+        $table = $db->quoteName($payerRefTableName);
+
+        $query = "CREATE TABLE IF NOT EXISTS $table (";
 
         $SQLfields = $this->getPaytpvTokenTableSQLFields();
         
@@ -332,8 +337,6 @@ class plgVmpaymentPaytpv extends vmPSPlugin {
         $query .= "       PRIMARY KEY (`token_id`)
         ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='PAYTPV Token' AUTO_INCREMENT=1 ;";
 
-
-        $db = JFactory::getDBO();
         $db->setQuery($query);
         if (!$db->execute()) {
             JError::raiseWarning(1, $payerRefTableName . '::createPaytpvTokenTable: ' . vmText::_('COM_VIRTUEMART_SQL_ERROR') . ' ' . $db->stderr(TRUE));
