@@ -5,7 +5,7 @@
  * @version $Id: PAYCOMET.php,v 2.0
  * @package VirtueMart
  * @subpackage payment
- * @copyright Copyright (C) 2019 PAYCOMET - All rights reserved.
+ * @copyright Copyright (C) PAYCOMET S.L.U. All rights reserved.
  * @license http://www.gnu.org/copyleft/gpl.html GNU/GPL, see LICENSE.php
  * VirtueMart is free software. This version may have been modified pursuant
  * to the GNU General Public License, and as distributed it includes or

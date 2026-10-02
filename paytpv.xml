@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <extension version="2.5" type="plugin" group="vmpayment" method="upgrade">
     <name>PAYCOMET</name>
-    <creationDate>Diciembre 2017</creationDate>
+    <creationDate>Octubre 2026</creationDate>
     <author>PAYCOMET</author>
     <authorUrl>https://www.paycomet.com</authorUrl>
     <copyright>Copyright (C) PAYCOMET S.L.U. All rights reserved.</copyright>
-    <version>3.1.0</version>
+    <version>3.2.0</version>
     <description>Módulo de pago para PAYCOMET</description>
     <languages folder="language">
         <language tag="en-GB">en-GB/en-GB.plg_vmpayment_paytpv.ini</language>
