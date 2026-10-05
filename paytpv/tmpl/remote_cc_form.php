@@ -11,8 +11,7 @@ $img_src = JURI::root(TRUE) . '/plugins/vmpayment/paytpv/paytpv/assets/img/';
 
 //$ccData = $viewData['ccData'];
 
-JHTML::_('behavior.tooltip');
-JHTML::script('vmcreditcard.js', 'components/com_virtuemart/assets/js/', false);
+
 vmLanguage::loadJLang('com_virtuemart', true);
 vmJsApi::jCreditCard();
 vmJsApi::jQuery();

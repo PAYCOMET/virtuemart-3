@@ -1,7 +1,7 @@
 <?php
 /**
 *  @author     PAYCOMET <info@paycomet.com>
-*  @copyright  2019 PAYTPV ON LINE ENTIDAD DE PAGO S.L
+*  @copyright  Copyright (C) PAYCOMET S.L.U. All rights reserved.
 *  @license    http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
 */
 

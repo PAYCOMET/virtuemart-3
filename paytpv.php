@@ -5,7 +5,7 @@
  * @version $Id: PAYCOMET.php,v 2.0
  * @package VirtueMart
  * @subpackage payment
- * @copyright Copyright (C) 2019 PAYCOMET - All rights reserved.
+ * @copyright Copyright (C) PAYCOMET S.L.U. All rights reserved.
  * @license http://www.gnu.org/copyleft/gpl.html GNU/GPL, see LICENSE.php
  * VirtueMart is free software. This version may have been modified pursuant
  * to the GNU General Public License, and as distributed it includes or
@@ -16,14 +16,17 @@
 defined('_JEXEC') or die('Restricted access');
 
 
-if (!class_exists( 'VmConfig' )) require(JPATH_ADMINISTRATOR . DS . 'components' . DS . 'com_virtuemart'.DS.'helpers'.DS.'config.php');
+if (!class_exists( 'VmConfig' )) {
+    require(JPATH_ADMINISTRATOR . '/components/com_virtuemart/helpers/config.php');
+    VmConfig::loadConfig();
+}
 
 if (!class_exists('vmPSPlugin')) {
-    require(VMPATH_PLUGINLIBS . DS . 'vmpsplugin.php');
+    require(JPATH_ADMINISTRATOR . '/components/com_virtuemart/helpers/vmpsplugin.php');
 }
 
 if (!class_exists('PaytpvHelperPaytpv')) {
-    require(VMPATH_ROOT . DS.'plugins'. DS.'vmpayment'. DS.'paytpv'. DS.'paytpv'. DS.'helpers'. DS.'helper.php');
+    require(JPATH_ROOT . '/plugins/vmpayment/paytpv/paytpv/helpers/helper.php');
 }
 
 
@@ -41,6 +44,8 @@ class plgVmpaymentPaytpv extends vmPSPlugin {
         $varsToPush = $this->getVarsToPush();
 
         $this->setConfigParameterable($this->_configTableFieldName, $varsToPush);
+
+        $this->createPaytpvTokenTable();
     }
       
 
@@ -97,12 +102,6 @@ class plgVmpaymentPaytpv extends vmPSPlugin {
             return FALSE;
         }
 
-        if (!class_exists('VirtueMartModelOrders')) {
-            require(VMPATH_ADMIN . DS . 'models' . DS . 'orders.php');
-        }
-        if (!class_exists('VirtueMartModelCurrency')) {
-            require(VMPATH_ADMIN . DS . 'models' . DS . 'currency.php');
-        }
         //$this->setInConfirmOrder($cart);
         $email_currency = $this->getEmailCurrency($this->_currentMethod);
 
@@ -202,11 +201,8 @@ class plgVmpaymentPaytpv extends vmPSPlugin {
     /*********************/
     private function _loadPaytpvInterface () {
 
-        if (!class_exists('PaytpvHelperPaytpv')) {
-            require(VMPATH_ROOT .  DS  .'plugins'. DS  .'vmpayment'. DS  .'paytpv'. DS  .'paytpv'. DS  .'helpers'. DS  .'helper.php');
-        }
         $paytpvInterface = new PaytpvHelperPaytpv($this->_currentMethod, $this);
-   
+
         return $paytpvInterface;
     }
 
@@ -409,7 +405,7 @@ class plgVmpaymentPaytpv extends vmPSPlugin {
         vmLanguage::loadJLang('com_virtuemart_orders', TRUE);
 
         // the payment itself should send the parameter needed.
-        $virtuemart_paymentmethod_id = JRequest::getInt('pm', 0);
+        $virtuemart_paymentmethod_id = vRequest::getInt('pm', 0);   
 
         $vendorId = 0;
         if (!($method = $this->getVmPluginMethod($virtuemart_paymentmethod_id))) {
@@ -420,32 +416,31 @@ class plgVmpaymentPaytpv extends vmPSPlugin {
         }
         
         if (!class_exists('shopFunctionsF')) {
-            require(VMPATH_SITE . DS . 'helpers' . DS . 'shopfunctionsf.php');
+            require(JPATH_ROOT . '/components/com_virtuemart/helpers/shopfunctionsf.php');
         }
-        
-        $order_number = JRequest::getVar('on');
 
-        if (!class_exists('VirtueMartModelOrders')) {
-            require(VMPATH_ADMIN . DS . 'models' . DS . 'orders.php');
-        }
+        $order_number = vRequest::getVar('on');
 
         $virtuemart_order_id = VirtueMartModelOrders::getOrderIdByOrderNumber($order_number);
         $payment_name = $this->renderPluginName($method);
         $payment_data = $this->getDataByOrderId($virtuemart_order_id);
 
-        if(!class_exists('VmModel'))require(JPATH_VM_ADMINISTRATOR.DS.'helpers'.DS.'vmmodel.php');
+        if (!class_exists('VmModel')) {
+            require(JPATH_ADMINISTRATOR . '/components/com_virtuemart/helpers/vmmodel.php');
+        }
         $order_model = VmModel::getModel('orders');
         $myorder = $order_model->getOrder($virtuemart_order_id);
 
 
         vmdebug('plgVmOnPaymentResponseReceived', $payment_data);
 
-        if (!class_exists('CurrencyDisplay'))
-            require(JPATH_VM_ADMINISTRATOR . DS . 'helpers' . DS . 'currencydisplay.php');
+        if (!class_exists('CurrencyDisplay')) {
+            require(JPATH_ADMINISTRATOR . '/components/com_virtuemart/helpers/currencydisplay.php');
+        }
         $currency = CurrencyDisplay::getInstance();
         $amount_currency = $currency->priceDisplay($payment_data->payment_order_total);
         $auth_code = $payment_data->AuthCode;
-        
+
         vmLanguage::loadJLang('com_virtuemart');
 
         $params = array();
@@ -457,7 +452,7 @@ class plgVmpaymentPaytpv extends vmPSPlugin {
         $html = $this->renderByLayout('response',$params);
 
         if (!class_exists('VirtueMartCart')) {
-            require(VMPATH_SITE . DS . 'helpers' . DS . 'cart.php');
+            require(JPATH_ROOT . '/components/com_virtuemart/helpers/cart.php');
         }
         
         // get the correct cart / session
@@ -486,7 +481,7 @@ class plgVmpaymentPaytpv extends vmPSPlugin {
         $filename = 'plg_vmpayment_paytpv';
         $lang->load($filename, JPATH_ADMINISTRATOR);
 
-        $paytpv_data = JRequest::get();
+        $paytpv_data = vRequest::get();
 
         if (isset($paytpv_data["notificationTask"]) && $paytpv_data["notificationTask"]=="handleCapture"){
             $this->PaymentCapture();
@@ -498,8 +493,11 @@ class plgVmpaymentPaytpv extends vmPSPlugin {
             return;
         }
 
-        if (!class_exists('VirtueMartModelOrders'))
-            require( JPATH_VM_ADMINISTRATOR . DS . 'models' . DS . 'orders.php' );
+        if (!class_exists('VirtueMartModelOrders')) {
+            if (!class_exists('VmModel')) {
+                require(JPATH_ADMINISTRATOR . '/components/com_virtuemart/helpers/vmmodel.php');
+            }
+        }
 
         if (isset($paytpv_data['Order']))
             $order_number = $paytpv_data['Order'];
@@ -537,7 +535,7 @@ class plgVmpaymentPaytpv extends vmPSPlugin {
             $this->_debug = true; // force debug here
             $this->debugLog('plgVmOnPaymentNotification: virtuemart_order_id not found ', 'ERROR');
             // send an email to admin, and ofc not update the order status: exit  is fine
-            $this->sendEmailToVendorAndAdmins(JText::_('VMPAYMENT_PAYTPV_ERROR_EMAIL_SUBJECT'), sprintf(JText::_('VMPAYMENT_PAYTPV_ILEGAL_ACCESS'), JRequest::getVar('REMOTE_ADDR', null, 'server')));
+            $this->sendEmailToVendorAndAdmins(JText::_('VMPAYMENT_PAYTPV_ERROR_EMAIL_SUBJECT'), sprintf(JText::_('VMPAYMENT_PAYTPV_ILEGAL_ACCESS'), vRequest::getVar('REMOTE_ADDR', null, 'server')));
             echo "Error Firma";
             exit;
         }
@@ -561,11 +559,15 @@ class plgVmpaymentPaytpv extends vmPSPlugin {
         if ($paytpv_data['TransactionType']==2){
             $new_status = $method->status_rebate;
 
-            if (!class_exists('CurrencyDisplay'))
-                require(JPATH_VM_ADMINISTRATOR . DS . 'helpers' . DS . 'currencydisplay.php');
+            if (!class_exists('CurrencyDisplay')) {
+                require(JPATH_ADMINISTRATOR . '/components/com_virtuemart/helpers/currencydisplay.php');
+            }
             $currency = CurrencyDisplay::getInstance();
             $amount_currency = $currency->priceDisplay($paytpv_data['AmountEur']);
 
+            if (!class_exists('VmModel')) {
+                require(JPATH_ADMINISTRATOR . '/components/com_virtuemart/helpers/vmmodel.php');
+            }
             $order_model = VmModel::getModel('orders');
             $myorder = $order_model->getOrder($virtuemart_order_id);
             $totalInPaymentCurrency = vmPSPlugin::getAmountValueInCurrency($myorder['details']['BT']->order_total, $method->payment_currency) * 100;
@@ -610,11 +612,11 @@ class plgVmpaymentPaytpv extends vmPSPlugin {
         $response_fields['Order'] = $paytpv_data['Order'];
         $response_fields['ErrorID'] = $paytpv_data['ErrorID'];
         $response_fields['ErrorDescription'] = $paytpv_data['ErrorDescription'];
-        $response_fields['AuthCode'] = $paytpv_data['AuthCode'];        
-        $response_fields['Currency'] = $paytpv_data['Currency'];        
-        $response_fields['Amount'] = $paytpv_data['Amount'];        
-        $response_fields['AmountEur'] = $paytpv_data['AmountEur'];        
-        $response_fields['Language'] = $paytpv_data['Language'];        
+        $response_fields['AuthCode'] = $paytpv_data['AuthCode'];
+        $response_fields['Currency'] = $paytpv_data['Currency'];
+        $response_fields['Amount'] = $paytpv_data['Amount'];
+        $response_fields['AmountEur'] = $paytpv_data['AmountEur'];
+        $response_fields['Language'] = $paytpv_data['Language'];
         $response_fields['AccountCode'] = $paytpv_data['AccountCode'];
         $response_fields['TpvID'] = $paytpv_data['TpvID'];
         $response_fields['SecurePayment'] = $paytpv_data['SecurePayment'];
@@ -629,8 +631,11 @@ class plgVmpaymentPaytpv extends vmPSPlugin {
 
         if ($virtuemart_order_id) {
             // send the email only if payment has been accepted
-            if (!class_exists('VirtueMartModelOrders'))
-                require( JPATH_VM_ADMINISTRATOR . DS . 'models' . DS . 'orders.php' );
+            if (!class_exists('VirtueMartModelOrders')) {
+                if (!class_exists('VmModel')) {
+                    require(JPATH_ADMINISTRATOR . '/components/com_virtuemart/helpers/vmmodel.php');
+                }
+            }
             $modelOrder = new VirtueMartModelOrders();
             $order = array();
             $order['order_status'] = $new_status;
@@ -645,7 +650,7 @@ class plgVmpaymentPaytpv extends vmPSPlugin {
                     $paytpvInterface = $this->_loadPaytpvInterface();
                     $IdUser = $paytpv_data["IdUser"];
                     $TokenUser = $paytpv_data["TokenUser"];
-                    $paytpvInterface->saveCard($virtuemart_order_id, $IdUser, $TokenUser);                  
+                    $paytpvInterface->saveCard($virtuemart_order_id, $IdUser, $TokenUser);
                 }
             }
             
@@ -663,7 +668,7 @@ class plgVmpaymentPaytpv extends vmPSPlugin {
         $filename = 'plg_vmpayment_paytpv';
         $lang->load($filename, JPATH_ADMINISTRATOR);
 
-        $paytpv_data = JRequest::get();
+        $paytpv_data = vRequest::get();
 
         if (!($this->_currentMethod = $this->getVmPluginMethod($paytpv_data["virtuemart_paymentmethod_id"]))) {
             return NULL;
@@ -685,13 +690,16 @@ class plgVmpaymentPaytpv extends vmPSPlugin {
         $filename = 'plg_vmpayment_paytpv';
         $lang->load($filename, JPATH_ADMINISTRATOR);
 
-        $paytpv_data = JRequest::get();
+        $paytpv_data = vRequest::get();
 
         $paytpv_card_hash = $paytpv_data["paytpv_card"];
         $order_number = $paytpv_data["order_number"];
 
-        if (!class_exists('VirtueMartModelOrders'))
-            require( JPATH_VM_ADMINISTRATOR . DS . 'models' . DS . 'orders.php' );
+        if (!class_exists('VirtueMartModelOrders')) {
+            if (!class_exists('VmModel')) {
+                require(JPATH_ADMINISTRATOR . '/components/com_virtuemart/helpers/vmmodel.php');
+            }
+        }
 
         $virtuemart_order_id = VirtueMartModelOrders::getOrderIdByOrderNumber($order_number);
         
@@ -719,7 +727,9 @@ class plgVmpaymentPaytpv extends vmPSPlugin {
         }
         $this->debugLog('paytpv_data ' . serialize($paytpv_data), 'message');
 
-        if(!class_exists('VmModel'))require(JPATH_VM_ADMINISTRATOR.DS.'helpers'.DS.'vmmodel.php');
+        if (!class_exists('VmModel')) {
+            require(JPATH_ADMINISTRATOR . '/components/com_virtuemart/helpers/vmmodel.php');
+        }
         $order_model = VmModel::getModel('orders');
         $myorder = $order_model->getOrder($virtuemart_order_id);
 
@@ -754,18 +764,18 @@ class plgVmpaymentPaytpv extends vmPSPlugin {
         // Execute_Purchase
         }else{
             if (!class_exists('Paytpv_Bankstore')) {
-                require(VMPATH_ROOT . DS.'plugins'. DS.'vmpayment'. DS.'paytpv'. DS.'paytpv_bankstore.php');
+                require(JPATH_ROOT . '/plugins/vmpayment/paytpv/paytpv_bankstore.php');
             }
-            
+
             if (!class_exists('PaycometApiRest')) {
-                require(VMPATH_ROOT . DS.'plugins'. DS.'vmpayment'. DS.'paytpv'. DS.'PaycometApiRest.php');
+                require(JPATH_ROOT . '/plugins/vmpayment/paytpv/PaycometApiRest.php');
             }
 
             $currency = $paytpvInterface->getPaymentCurrency();
 
             if($this->_currentMethod->apikey != ''){
                 $apiRest = new PaycometApiRest($this->_currentMethod->apikey);
-                $executePurchaseResponse = $apiRest->executePurchase(
+                $executePurchaseResponse =$apiRest->executePurchase(
                     $this->_currentMethod->terminal,
                     $order_number,
                     $totalInPaymentCurrency,
@@ -775,8 +785,8 @@ class plgVmpaymentPaytpv extends vmPSPlugin {
                     $dsecure,
                     $IdUser,
                     $TokenUser,
-                    JROUTE::_(JURI::root() . 'index.php?option=com_virtuemart&view=pluginresponse&task=pluginresponsereceived&on=' . $order_number . '&pm=' . $myorder['details']['BT']->virtuemart_paymentmethod_id),
-                    JROUTE::_(JURI::root() . 'index.php?option=com_virtuemart&view=pluginresponse&task=pluginUserPaymentCancel&on=' . $order_number . '&pm=' . $myorder['details']['BT']->virtuemart_paymentmethod_id),
+                    JROUTE::_(JURI::root() . 'index.php?option=com_virtuemart&view=pluginresponse&task=pluginresponsereceived&on=' . $order_number . '&pm=' .$myorder['details']['BT']->virtuemart_paymentmethod_id),
+                    JROUTE::_(JURI::root() . 'index.php?option=com_virtuemart&view=pluginresponse&task=pluginUserPaymentCancel&on=' . $order_number . '&pm=' .$myorder['details']['BT']->virtuemart_paymentmethod_id),
                     '',
                     '',
                     '',
@@ -799,7 +809,7 @@ class plgVmpaymentPaytpv extends vmPSPlugin {
                 if($this->_currentMethod->apikey != ''){
                     $url = $executePurchaseResponse->challengeUrl;
                 } else {
-                    $url = JROUTE::_(JURI::root() . 'index.php?option=com_virtuemart&view=pluginresponse&task=pluginresponsereceived&on=' . $order_number . '&pm=' . $myorder['details']['BT']->virtuemart_paymentmethod_id);
+                    $url = JROUTE::_(JURI::root() . 'index.php?option=com_virtuemart&view=pluginresponse&task=pluginresponsereceived&on=' . $order_number . '&pm=' .$myorder['details']['BT']->virtuemart_paymentmethod_id);
                 }
                 
                 // Save IDUser y Token to Order
@@ -975,11 +985,11 @@ class plgVmpaymentPaytpv extends vmPSPlugin {
     function doRebate ($paytpvInterface, $orderData, $payment_data, $amount=null) {
 
         if (!class_exists('Paytpv_Bankstore')) {
-            require(VMPATH_ROOT . DS.'plugins'. DS.'vmpayment'. DS.'paytpv'. DS.'paytpv_bankstore.php');
+            require(JPATH_ROOT . '/plugins/vmpayment/paytpv/paytpv_bankstore.php');
         }
 
         if (!class_exists('PaycometApiRest')) {
-            require(VMPATH_ROOT . DS.'plugins'. DS.'vmpayment'. DS.'paytpv'. DS.'PaycometApiRest.php');
+            require(JPATH_ROOT . '/plugins/vmpayment/paytpv/PaycometApiRest.php');
         }
 
         if ($amount){
@@ -1009,22 +1019,6 @@ class plgVmpaymentPaytpv extends vmPSPlugin {
         }
 
         return $response;
-        /*
-        $msg = '';
-        if ('' == $response['DS_RESPONSE'] || 0 == $response['DS_RESPONSE']) {
-            $order_history_comment = vmText::_('VMPAYMENT_PAYTPV_API_UPDATE_STATUS_REBATE_ERROR');
-        }
-
-        $order_history_comment = vmText::_('VMPAYMENT_PAYTPV_API_UPDATE_STATUS_REBATE');
-        $paytpvInterface->setOrder($orderData);
-        $paytpvInterface->setPaymentCurrency();
-        if ($amount===false) {
-            $amount=$orderData['details']['BT']->order_total;
-        }
-        $paytpvInterface->setTotalInPaymentCurrency($amount);
-        
-        return $response;
-        */
     }
 
 
@@ -1037,7 +1031,7 @@ class plgVmpaymentPaytpv extends vmPSPlugin {
      *
      */
     function plgVmOnCheckAutomaticSelectedPayment (VirtueMartCart $cart, array $cart_prices = array(), &$methodCounter = 0) {
-        return $this->onCheckAutomaticSelected($cart, $cart_prices, $paymentCounter);
+        return $this->onCheckAutomaticSelected($cart, $cart_prices,$paymentCounter);
     }
 
    
@@ -1049,7 +1043,7 @@ class plgVmpaymentPaytpv extends vmPSPlugin {
      * @return mixed Null for methods that aren't active, text (HTML) otherwise
      */
     public function plgVmOnShowOrderFEPayment ($virtuemart_order_id, $virtuemart_paymentmethod_id, &$payment_name) {
-        $this->onShowOrderFE($virtuemart_order_id, $virtuemart_paymentmethod_id, $payment_name);
+        $this->onShowOrderFE($virtuemart_order_id, $virtuemart_paymentmethod_id,$payment_name);
 
         return true;
     }
@@ -1087,62 +1081,6 @@ class plgVmpaymentPaytpv extends vmPSPlugin {
 
 
 
-    
-
-    /**
-     * Save updated order data to the method specific table
-     *
-     * @param array $_formData Form data
-     * @return mixed, True on success, false on failures (the rest of the save-process will be
-     * skipped!), or null when this method is not actived.
-
-
-    public function plgVmOnUpdateOrderPayment(  $_formData) {
-    return null;
-    }
-     */
-    /**
-     * Save updated orderline data to the method specific table
-     *
-     * @param array $_formData Form data
-     * @return mixed, True on success, false on failures (the rest of the save-process will be
-     * skipped!), or null when this method is not actived.
-
-
-    public function plgVmOnUpdateOrderLine(  $_formData) {
-    return null;
-    }
-     */
-
-    /**
-     * plgVmOnEditOrderLineBE
-     * This method is fired when editing the order line details in the backend.
-     * It can be used to add line specific package codes
-     *
-     * @param integer $_orderId The order ID
-     * @param integer $_lineId
-     * @return mixed Null for method that aren't active, text (HTML) otherwise
-
-
-    public function plgVmOnEditOrderLineBE(  $_orderId, $_lineId) {
-    return null;
-    }
-     */
-
-    /**
-     * This method is fired when showing the order details in the frontend, for every orderline.
-     * It can be used to display line specific package codes, e.g. with a link to external tracking and
-     * tracing systems
-     *
-     * @param integer $_orderId The order ID
-     * @param integer $_lineId
-     * @return mixed Null for method that aren't active, text (HTML) otherwise
-
-    public function plgVmOnShowOrderLineFE(  $_orderId, $_lineId) {
-    return null;
-    }
-     */
-
     public function plgVmDeclarePluginParamsPaymentVM3( &$data) {
         return $this->declarePluginParams('payment', $data);
     }
@@ -1151,7 +1089,5 @@ class plgVmpaymentPaytpv extends vmPSPlugin {
 
         return $this->setOnTablePluginParams($name, $id, $table);
     }
-    
-}
 
-// No closing tag
+}
