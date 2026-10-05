@@ -11,8 +11,7 @@ $img_src = JURI::root(TRUE) . '/plugins/vmpayment/paytpv/paytpv/assets/img/';
 
 //$ccData = $viewData['ccData'];
 
-JHTML::_('behavior.tooltip');
-JHTML::script('vmcreditcard.js', 'components/com_virtuemart/assets/js/', false);
+
 vmLanguage::loadJLang('com_virtuemart', true);
 vmJsApi::jCreditCard();
 vmJsApi::jQuery();
@@ -88,19 +87,13 @@ vmJsApi::addJScript ('vmPaytpvSumit',"
 
 
 	<?php if ($viewData['offer_save_card'] && $viewData['user_id']>0){
-
-		if($viewData['remembercardunselected']) {
-			$checked = 'checked="checked"';
-		} else {
-			$checked = '';
-		}
-		?>
+	?>
 
 		<div class="offer_save_card">
-			<div id="save_card_tip"><?php echo vmText::_('VMPAYMENT_PAYTPV_SAVE_CARD_DETAILS_TIP') ?></div>
 			<label for="save_card">
 				<input id="save_card" name="save_card" type="checkbox" value="1" <?php echo $checked ?>><span
 					class="save_card"> <?php echo vmText::_('VMPAYMENT_PAYTPV_SAVE_CARD_DETAILS') ?></span> </label>
+			<div id="save_card_tip"><?php echo vmText::_('VMPAYMENT_PAYTPV_SAVE_CARD_DETAILS_TIP') ?></div>
 		</div>
 	<?php
 	}

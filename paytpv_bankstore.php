@@ -13,7 +13,7 @@
  * @version    1.1.4
  * @author     PAYTPV
  * @license    BSD License (3-clause)
- * @copyright  (c) 2010-2016, PAYTPV
+ * @copyright  Copyright (C) PAYCOMET S.L.U. All rights reserved.
  * @link       https://www..paycomet.com
  */
 
